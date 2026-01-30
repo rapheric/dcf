@@ -1,149 +1,3 @@
-// // export default CreateUserModal;
-// import React, { useMemo } from "react";
-// import { Modal, Input, Select, Form, Button } from "antd";
-
-// const roleOptions = [
-//   { value: "rm", label: "Relationship Manager" },
-//   { value: "cocreator", label: "CO Creator" },
-//    { value: "customer", label: "Customer" },
-//   { value: "cochecker", label: "CO Checker" },
-//   { value: "admin", label: "Admin" },
-// ];
-
-// const CreateUserModal = ({
-//   visible,
-//   loading,
-//   formData,
-//   setFormData,
-//   onCreate,
-//   onClose,
-// }) => {
-//   const roles = useMemo(() => roleOptions, []);
-
-//   return (
-//     <Modal
-//       open={visible}
-//       onCancel={onClose}
-//       footer={null}
-//       centered
-//       destroyOnClose={false}
-//       width={380}
-//       className="dark:bg-gray-900"
-//       bodyStyle={{
-//         padding: "10px 16px",
-//         background: "var(--modal-bg)",
-//       }}
-//       title={
-//         <div className="text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200">
-//           Create New User
-//         </div>
-//       }
-//     >
-//       <div className="dark:bg-gray-900">
-//         <Form
-//           layout="vertical"
-//           onFinish={onCreate}
-//           className="space-y-3 sm:space-y-2"
-//         >
-//           {/* NAME */}
-//           <Form.Item
-//             label={
-//               <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-//                 Name
-//               </span>
-//             }
-//             required
-//             className="mb-2"
-//           >
-//             <Input
-//               size="middle"
-//               value={formData.name}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, name: e.target.value })
-//               }
-//               className="rounded-md dark:bg-gray-800 dark:text-gray-100"
-//             />
-//           </Form.Item>
-
-//           {/* EMAIL */}
-//           <Form.Item
-//             label={
-//               <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-//                 Email
-//               </span>
-//             }
-//             required
-//             className="mb-2"
-//           >
-//             <Input
-//               type="email"
-//               size="middle"
-//               value={formData.email}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, email: e.target.value })
-//               }
-//               className="rounded-md dark:bg-gray-800 dark:text-gray-100"
-//             />
-//           </Form.Item>
-
-//           {/* PASSWORD */}
-//           <Form.Item
-//             label={
-//               <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-//                 Password
-//               </span>
-//             }
-//             required
-//             className="mb-2"
-//           >
-//             <Input.Password
-//               size="middle"
-//               value={formData.password}
-//               onChange={(e) =>
-//                 setFormData({ ...formData, password: e.target.value })
-//               }
-//               className="rounded-md dark:bg-gray-800 dark:text-gray-100"
-//             />
-//           </Form.Item>
-
-//           {/* ROLE */}
-//           <Form.Item
-//             label={
-//               <span className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-//                 Role
-//               </span>
-//             }
-//             className="mb-3"
-//           >
-//             <Select
-//               size="middle"
-//               value={formData.role}
-//               onChange={(value) => setFormData({ ...formData, role: value })}
-//               options={roles}
-//               className="rounded-md dark:bg-gray-800 dark:text-gray-100"
-//               popupMatchSelectWidth={260}
-//             />
-//           </Form.Item>
-
-//           {/* BUTTON */}
-//           <Button
-//             htmlType="submit"
-//             type="primary"
-//             block
-//             loading={loading}
-//             className="h-9 text-sm font-medium rounded-md
-//                        bg-gray-700 dark:bg-gray-600
-//                        hover:bg-gray-800 dark:hover:bg-gray-500
-//                        text-white"
-//           >
-//             Create User
-//           </Button>
-//         </Form>
-//       </div>
-//     </Modal>
-//   );
-// };
-
 // export default CreateUserModal;
 // export default CreateUserModal;
 import React, { useMemo } from "react";
@@ -197,7 +51,8 @@ const CreateUserModal = ({
                 Name
               </span>
             }
-            required
+            name="name"
+            rules={[{ required: true, message: 'Please enter name' }]}
             className="mb-2"
           >
             <Input
@@ -206,6 +61,7 @@ const CreateUserModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
+              placeholder="Enter full name"
               className="rounded-md dark:bg-gray-800 dark:text-gray-100"
             />
           </Form.Item>
@@ -217,7 +73,11 @@ const CreateUserModal = ({
                 Email
               </span>
             }
-            required
+            name="email"
+            rules={[
+              { required: true, message: 'Please enter email' },
+              { type: 'email', message: 'Please enter valid email' }
+            ]}
             className="mb-2"
           >
             <Input
@@ -227,6 +87,7 @@ const CreateUserModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
+              placeholder="user@example.com"
               className="rounded-md dark:bg-gray-800 dark:text-gray-100"
             />
           </Form.Item>
@@ -238,8 +99,21 @@ const CreateUserModal = ({
                 Password
               </span>
             }
-            required
+            name="password"
+            rules={[
+              { required: true, message: 'Please enter password' },
+              { min: 8, message: 'Password must be at least 8 characters' },
+              {
+                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                message: 'Password must include uppercase, lowercase, number & special character (@$!%*?&)'
+              }
+            ]}
             className="mb-2"
+            extra={
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special (@$!%*?&)
+              </span>
+            }
           >
             <Input.Password
               size="middle"
@@ -247,6 +121,7 @@ const CreateUserModal = ({
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
+              placeholder="e.g. MyPass123!"
               className="rounded-md dark:bg-gray-800 dark:text-gray-100"
             />
           </Form.Item>

@@ -427,19 +427,28 @@ const DocumentTable = ({
         const deferralNo = record.deferralNumber || record.deferralNo;
 
         let displayText = record.rmStatus || "Unknown";
+        let color = "#1890ff"; // Default to blue
 
-        // Show deferral number in parentheses for "Deferral Requested"
         if (rmStatus.includes("defferal_requested") && deferralNo) {
           displayText = `Deferral Requested (${deferralNo})`;
+        }
+
+        // Apply colors based on status
+        if (rmStatus === "pending_from_customer") {
+          color = "#faad14"; // Yellow/Orange for pending
+        } else if (rmStatus === "submitted_for_review") {
+          color = "#52c41a"; // Green for submitted
+        } else if (rmStatus.includes("defferal_requested") || rmStatus === "deferred") {
+          color = "#ff4d4f"; // Red for deferred
         }
 
         return (
           <Tag
             className="status-tag"
             style={{
-              color: "#722ed1",
-              backgroundColor: "#722ed122",
-              borderColor: "#722ed155",
+              color: color,
+              backgroundColor: color + "22",
+              borderColor: color + "55",
               fontWeight: 600,
               fontSize: "11px",
               padding: "2px 8px",

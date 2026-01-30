@@ -242,7 +242,7 @@ const DocumentTable = ({
             color = "green";
             break;
           case "defferal_requested":
-            color = "warning";
+            color = "purple";
             break;
           case "pending_from_customer":
             color = "orange";
