@@ -21,7 +21,8 @@ import {
 } from "@ant-design/icons";
 import dayjs from "dayjs";
 
-import CompletedChecklistModal from "../../components/modals/CompletedChecklistModal";
+import CompletedChecklistModal from "../../components/modals/CompletedChecklistModalComponents/CompletedChecklistModal";
+
 import { useGetAllCoCreatorChecklistsQuery } from "../../api/checklistApi";
 
 const { Text } = Typography;

@@ -20,11 +20,12 @@ import {
 // Import all modal components
 // import ReviewChecklistModal from "../../components/modals/CreatorReviewChecklistModal";
 // import CheckerReviewChecklistModal from "../../components/modals/CheckerReviewChecklistModal";
-import CompletedChecklistModal from "../../components/modals/CompletedChecklistModal";
+// import CompletedChecklistModal from "../../components/modals/CompletedChecklistModal";
 import CreatorCompletedChecklistModal from "../../components/modals/CreatorCompletedChecklistModal";
 import ReviewChecklistModal from "../../components/modals/ReviewChecklistModalComponents/ReviewChecklistModal";
 import RmReviewChecklistModal from "../../components/modals/RmReviewChecklistModalComponents/RmReviewChecklistModal";
 import CheckerReviewChecklistModal from "../../components/modals/CheckerReviewChecklistModalComponents/CheckerReviewChecklistModal";
+import CompletedChecklistModal from "../../components/modals/CompletedChecklistModalComponents/CompletedChecklistModal";
 
 const CHECKLIST_STATUS_META = {
   co_creator_review: {
