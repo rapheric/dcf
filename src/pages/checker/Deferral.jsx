@@ -4291,32 +4291,51 @@ const Deferrals = ({ userId }) => {
                     const requesterRole = selectedDeferral.requestor?.role || selectedDeferral.requestedBy?.role || 'RM';
                     const requestDate = selectedDeferral.requestedDate || selectedDeferral.createdAt || selectedDeferral.requestedAt;
                     const requestComment = selectedDeferral.rmReason || 'Deferral request submitted';
-                    events.push({ user: requester, userRole: requesterRole, date: requestDate, comment: requestComment });
 
+                    // Add initial request only if there's actual comment text
+                    if (requestComment && requestComment.trim() !== '') {
+                      events.push({ user: requester, userRole: requesterRole, date: requestDate, comment: requestComment });
+                    }
+
+                    // Add all user-provided comments (includes co-creator and co-checker comments)
                     if (selectedDeferral.comments && Array.isArray(selectedDeferral.comments) && selectedDeferral.comments.length > 0) {
                       selectedDeferral.comments.forEach(c => {
-                        const commentAuthorName = c.author?.name || c.authorName || c.userName || c.author?.email || 'RM';
-                        const commentAuthorRole = c.author?.role || c.authorRole || c.role || 'RM';
-                        events.push({
-                          user: commentAuthorName,
-                          userRole: commentAuthorRole,
-                          date: c.createdAt,
-                          comment: c.text || ''
-                        });
+                        const commentAuthorName = c.author?.name || c.authorName || c.userName || c.author?.email || 'Unknown';
+                        const commentAuthorRole = c.author?.role || c.authorRole || c.role || '';
+                        const commentText = c.text || '';
+
+                        // Only add if there's actual comment text
+                        if (commentText && commentText.trim() !== '') {
+                          events.push({
+                            user: commentAuthorName,
+                            userRole: commentAuthorRole,
+                            date: c.createdAt,
+                            comment: commentText
+                          });
+                        }
                       });
                     }
 
+                    // Add history items, but ONLY those with actual user comments (not system-generated messages)
                     if (selectedDeferral.history && Array.isArray(selectedDeferral.history) && selectedDeferral.history.length > 0) {
                       selectedDeferral.history.forEach((h) => {
+                        // Skip system actions without user comments
                         if (h.action === 'moved') return;
-                        const userName = h.user?.name || h.userName || h.user || 'System';
-                        const userRole = h.user?.role || h.userRole || h.role || 'System';
-                        events.push({
-                          user: userName,
-                          userRole: userRole,
-                          date: h.date || h.createdAt || h.timestamp || h.entryDate,
-                          comment: h.comment || h.notes || h.message || ''
-                        });
+
+                        // Only include history items that have a 'comment' field with actual user input
+                        // Skip system-generated 'notes' that don't have corresponding user comments
+                        const userComment = h.comment || '';
+
+                        if (userComment && userComment.trim() !== '') {
+                          const userName = h.user?.name || h.userName || h.user || 'Unknown';
+                          const userRole = h.user?.role || h.userRole || h.role || '';
+                          events.push({
+                            user: userName,
+                            userRole: userRole,
+                            date: h.date || h.createdAt || h.timestamp || h.entryDate,
+                            comment: userComment
+                          });
+                        }
                       });
                     }
 

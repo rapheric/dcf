@@ -1,10 +1,10 @@
 import React from "react";
 import { Button, Space, Tooltip, message } from "antd";
 import {
-  FilePdfOutlined,
   CheckCircleOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
+import PDFGenerator from "./PDFGenerator";
 import { ACCENT_LIME, PRIMARY_BLUE } from "../../../utils/constants";
 
 const ActionButtons = ({
@@ -29,24 +29,24 @@ const ActionButtons = ({
   const approveTooltipText = getApproveButtonTooltip
     ? getApproveButtonTooltip()
     : (() => {
-        if (isDisabled) return "Checklist is not in review state";
-        if (checkerReviewed !== total)
-          return `${total - checkerReviewed} document(s) not reviewed yet`;
-        if (checkerRejected > 0)
-          return `${checkerRejected} document(s) rejected`;
-        if (checkerApproved !== total)
-          return `${total - checkerApproved} document(s) not approved`;
-        return "Approve this checklist";
-      })();
+      if (isDisabled) return "Checklist is not in review state";
+      if (checkerReviewed !== total)
+        return `${total - checkerReviewed} document(s) not reviewed yet`;
+      if (checkerRejected > 0)
+        return `${checkerRejected} document(s) rejected`;
+      if (checkerApproved !== total)
+        return `${total - checkerApproved} document(s) not approved`;
+      return "Approve this checklist";
+    })();
 
   // NEW: Return to creator tooltip
   const returnToCreatorTooltipText = getReturnToCreatorTooltip
     ? getReturnToCreatorTooltip()
     : (() => {
-        if (isDisabled) return "Checklist is not in review state";
-        if (checkerRejected === 0) return "No rejected documents to return";
-        return `Return checklist to creator with ${checkerRejected} rejected document(s)`;
-      })();
+      if (isDisabled) return "Checklist is not in review state";
+      if (checkerRejected === 0) return "No rejected documents to return";
+      return `Return checklist to creator with ${checkerRejected} rejected document(s)`;
+    })();
 
   return (
     <div
@@ -68,20 +68,15 @@ const ActionButtons = ({
         }}
       >
         <Space size="middle">
-          <Button
-            icon={<FilePdfOutlined />}
-            onClick={handlePdfDownload}
-            loading={isGeneratingPDF}
-            style={{
-              backgroundColor: PRIMARY_BLUE,
-              borderColor: PRIMARY_BLUE,
-              color: "white",
-              borderRadius: "6px",
-              fontWeight: 600,
-            }}
-          >
-            Download PDF
-          </Button>
+          <PDFGenerator
+            checklist={{ ...checklist, dclNo: checklist?.dclNo || checklist?._id }}
+            docs={docs}
+            supportingDocs={[]}
+            creatorComment=""
+            comments={comments}
+            buttonText="Download PDF"
+            variant="primary"
+          />
 
           {!effectiveReadOnly && (
             <Button

@@ -1,14 +1,13 @@
 import React from 'react';
 import { Button, message } from 'antd';
 import { FilePdfOutlined } from "@ant-design/icons";
-// import { usePDFGenerator } from '../../hooks/usePDFGenerator';
 import { PRIMARY_BLUE } from '../../../utils/constants';
 import usePDFGenerator from '../../../hooks/usePDFGenerator';
 
 const PDFGenerator = ({
   checklist,
   docs,
-  supportingDocs,
+  supportingDocs = [],
   creatorComment,
   comments
 }) => {
@@ -16,15 +15,21 @@ const PDFGenerator = ({
 
   const handleGeneratePDF = async () => {
     try {
+      if (!checklist) {
+        message.error("No checklist data available");
+        return;
+      }
+
       await generatePDF({
         checklist,
-        documents: docs,
-        supportingDocs,
-        creatorComment,
-        comments
+        documents: docs || [],
+        supportingDocs: supportingDocs || [],
+        creatorComment: creatorComment || '',
+        comments: comments || []
       });
     } catch (error) {
-      message.error("Failed to generate PDF");
+      console.error("PDF generation error:", error);
+      message.error(error.message || "Failed to generate PDF");
     }
   };
 
@@ -47,4 +52,4 @@ const PDFGenerator = ({
   );
 };
 
-export default PDFGenerator;
+export default PDFGenerator

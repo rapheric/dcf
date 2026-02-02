@@ -12,7 +12,7 @@ import SupportingDocsSection from "./SupportingDocsSection";
 import CommentSection from "./CommentSection";
 import ProgressSummary from "./ProgressSummary";
 import SaveDraftButton from "./SaveDraftButton";
-import PdfExportButton from "./PdfExportButton";
+import PDFGenerator from "./PDFGenerator";
 import DocumentTable from "./DocumentTable";
 import { PRIMARY_BLUE } from "../../../utils/colors";
 import { calculateDocumentStats } from "../../../utils/documentStats";
@@ -295,12 +295,16 @@ const RmReviewChecklistModal = ({
         </span>
       }
       footer={[
-        <PdfExportButton
+        <PDFGenerator
           key="download"
-          checklist={checklist}
+          checklist={{ ...checklist, dclNo: checklist?.dclNo || checklist?._id }}
           docs={docs}
-          documentStats={documentStats}
-          rmGeneralComment={rmGeneralComment}
+          supportingDocs={supportingDocs || []}
+          creatorComment=""
+          rmGeneralComment={rmGeneralComment || ""}
+          comments={comments || []}
+          buttonText="Download PDF"
+          variant="primary"
         />,
 
         !readOnly && (

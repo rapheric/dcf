@@ -1612,38 +1612,59 @@ const DeferralReviewModal = ({ deferral, open, onClose, onDecision }) => {
             // Initial request - show requestor's real name and role
             const requesterName = localDeferral.requestor?.name || localDeferral.requestedBy || localDeferral.rmName || 'RM';
             const requesterRole = localDeferral.requestor?.role || 'RM';
-            events.push({
-              user: requesterName,
-              userRole: requesterRole,
-              date: localDeferral.requestedDate || localDeferral.createdAt,
-              comment: localDeferral.rmReason || 'Deferral request submitted'
-            });
+            const requestComment = localDeferral.rmReason || 'Deferral request submitted';
 
-            // Add RM's posted comments (if any)
-            if (localDeferral.comments && Array.isArray(localDeferral.comments) && localDeferral.comments.length > 0) {
-              localDeferral.comments.forEach(c => {
-                const commentAuthorName = c.author?.name || 'RM';
-                const commentAuthorRole = c.author?.role || 'RM';
-                events.push({
-                  user: commentAuthorName,
-                  userRole: commentAuthorRole,
-                  date: c.createdAt,
-                  comment: c.text || ''
-                });
+            // Add initial request only if there's actual comment text
+            if (requestComment && requestComment.trim() !== '') {
+              events.push({
+                user: requesterName,
+                userRole: requesterRole,
+                date: localDeferral.requestedDate || localDeferral.createdAt,
+                comment: requestComment
               });
             }
 
-            // Stored history entries - filter out redundant 'moved' entries
+            // Add all user-provided comments (includes co-creator and co-checker comments)
+            if (localDeferral.comments && Array.isArray(localDeferral.comments) && localDeferral.comments.length > 0) {
+              localDeferral.comments.forEach(c => {
+                const commentAuthorName = c.author?.name || 'Unknown';
+                const commentAuthorRole = c.author?.role || '';
+                const commentText = c.text || '';
+
+                // Only add if there's actual comment text
+                if (commentText && commentText.trim() !== '') {
+                  events.push({
+                    user: commentAuthorName,
+                    userRole: commentAuthorRole,
+                    date: c.createdAt,
+                    comment: commentText
+                  });
+                }
+              });
+            }
+
+            // Add history items, but ONLY those with actual user comments (not system-generated messages)
             if (localDeferral.history && Array.isArray(localDeferral.history) && localDeferral.history.length > 0) {
               localDeferral.history.forEach(h => {
-                // Skip redundant 'moved' action entries
+                // Skip system actions without user comments
                 if (h.action === 'moved') {
                   return;
                 }
 
-                const userName = h.user?.name || h.userName || h.user || 'System';
-                const userRole = h.user?.role || h.userRole || h.role || undefined;
-                events.push({ user: userName, userRole: userRole, date: h.date || h.createdAt || h.timestamp || h.entryDate, comment: h.comment || h.notes || h.message || '' });
+                // Only include history items that have a 'comment' field with actual user input
+                // Skip system-generated 'notes' that don't have corresponding user comments
+                const userComment = h.comment || '';
+
+                if (userComment && userComment.trim() !== '') {
+                  const userName = h.user?.name || h.userName || h.user || 'Unknown';
+                  const userRole = h.user?.role || h.userRole || h.role || '';
+                  events.push({
+                    user: userName,
+                    userRole: userRole,
+                    date: h.date || h.createdAt || h.timestamp || h.entryDate,
+                    comment: userComment
+                  });
+                }
               });
             }
 
