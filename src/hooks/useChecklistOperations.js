@@ -45,6 +45,8 @@ export const useChecklistOperations = (
           _id: doc._id || doc.id,
           name: doc.name,
           status: doc.status || doc.action, // Use action as fallback
+          creatorStatus: doc.creatorStatus, // PRESERVE creator status
+          checkerStatus: doc.checkerStatus, // PRESERVE checker status
           comment: doc.comment,
           fileUrl: doc.fileUrl,
           deferralNumber: doc.deferralNo,
@@ -106,6 +108,8 @@ export const useChecklistOperations = (
           name: doc.name,
           category: doc.category,
           status: doc.action || doc.status,
+          creatorStatus: doc.creatorStatus, // PRESERVE creator status
+          checkerStatus: doc.checkerStatus, // PRESERVE checker status
           comment: doc.comment || "",
           fileUrl: doc.fileUrl || null,
           expiryDate: doc.expiryDate || null,

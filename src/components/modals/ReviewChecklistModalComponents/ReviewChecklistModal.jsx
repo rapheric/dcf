@@ -135,6 +135,8 @@ const ReviewChecklistModal = ({
       ...doc,
       docIdx: idx,
       status: doc.status, // PRESERVE original status from backend
+      creatorStatus: doc.creatorStatus, // PRESERVE creator status from backend
+      checkerStatus: doc.checkerStatus, // PRESERVE checker status from backend
       action: doc.action || doc.status, // Use action if it exists, otherwise use status
       comment: doc.comment || "",
       fileUrl: doc.fileUrl || null,
