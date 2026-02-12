@@ -90,6 +90,13 @@ const ReviewChecklistModal = ({
     creatorComment,
     null,
     handleChecklistUpdate,
+    // ✅ NEW: Pass refetch callback to ensure parent refetches after submission
+    () => {
+      console.log("📡 useChecklistOperations requesting parent refetch");
+      if (onChecklistUpdate) {
+        onChecklistUpdate(checklist);
+      }
+    }
   );
 
   // Wrapper for uploading supporting docs that updates local state
@@ -137,6 +144,7 @@ const ReviewChecklistModal = ({
       status: doc.status, // PRESERVE original status from backend
       creatorStatus: doc.creatorStatus, // PRESERVE creator status from backend
       checkerStatus: doc.checkerStatus, // PRESERVE checker status from backend
+      checkerComment: doc.checkerComment || "", // ✅ Include checker comment from backend
       action: doc.action || doc.status, // Use action if it exists, otherwise use status
       comment: doc.comment || "",
       fileUrl: doc.fileUrl || null,
@@ -147,6 +155,7 @@ const ReviewChecklistModal = ({
       rmStatus: doc.rmStatus || "",
     }));
 
+    console.log("📋 Documents loaded in ReviewChecklistModal:", preparedDocs); // ✅ Debug logging
     setDocs(preparedDocs);
   }, [localChecklist, checklist]);
 

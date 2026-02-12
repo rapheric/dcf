@@ -15,6 +15,7 @@ export const useChecklistOperations = (
   creatorComment,
   currentUser,
   onChecklistUpdate = null, // Callback to update parent component with fresh checklist data
+  onRefetchNeeded = null, // Callback to trigger parent refetch after submission
 ) => {
   const auth = useSelector((state) => state.auth);
   const token = auth?.token || localStorage.getItem("token");
@@ -79,6 +80,12 @@ export const useChecklistOperations = (
         );
       }
 
+      // ✅ NEW: Trigger refetch to ensure frontend has latest data from backend
+      if (onRefetchNeeded) {
+        console.log("🔄 Triggering refetch after successful RM submission");
+        onRefetchNeeded();
+      }
+
       return result;
     } catch (err) {
       console.error("Submit to RM error:", err);
@@ -100,13 +107,18 @@ export const useChecklistOperations = (
         key: "checkerSubmit",
       });
 
-      const payload = {
-        dclNo: checklist.dclNo,
-        status: "co_checker_review",
-        documents: docs.map((doc) => ({
-          _id: doc._id,
+      // ✅ CRITICAL FIX: Nest documents by category to match backend structure
+      // Backend expects: { category, docList: [...] } structure
+      const nestedDocuments = docs.reduce((acc, doc) => {
+        let categoryGroup = acc.find((c) => c.category === doc.category);
+        if (!categoryGroup) {
+          categoryGroup = { category: doc.category, docList: [] };
+          acc.push(categoryGroup);
+        }
+        categoryGroup.docList.push({
+          id: doc._id || doc.id,
+          _id: doc._id || doc.id,
           name: doc.name,
-          category: doc.category,
           status: doc.action || doc.status,
           creatorStatus: doc.creatorStatus, // PRESERVE creator status
           checkerStatus: doc.checkerStatus, // PRESERVE checker status
@@ -114,11 +126,33 @@ export const useChecklistOperations = (
           fileUrl: doc.fileUrl || null,
           expiryDate: doc.expiryDate || null,
           deferralNo: doc.deferralNo || null,
-        })),
+        });
+        return acc;
+      }, []);
+
+      const payload = {
+        dclNo: checklist.dclNo,
+        status: "co_checker_review",
+        documents: nestedDocuments, // Now properly nested by category
         supportingDocs,
       };
 
+      console.log("📤 BEFORE SUBMISSION:");
+      console.log("   Payload:", JSON.stringify(payload, null, 2));
+      console.log("   Documents count:", docs.length);
+      console.log("   Nested structure count:", nestedDocuments.length);
+
       const result = await updateChecklistStatus(payload).unwrap();
+
+      console.log("📥 AFTER SUBMISSION RESPONSE:");
+      console.log("   Response:", JSON.stringify(result, null, 2));
+      console.log("   Returned documents:", result?.checklist?.documents?.length);
+      
+      if (result?.checklist?.documents) {
+        result.checklist.documents.forEach((cat) => {
+          console.log(`   Category: ${cat.category}, Docs: ${cat.docList?.length}`);
+        });
+      }
 
       message.success({
         content: "Checklist submitted to Co-Checker!",
@@ -128,13 +162,22 @@ export const useChecklistOperations = (
 
       // Trigger parent callback with updated checklist data from server
       if (onChecklistUpdate) {
-        onChecklistUpdate(
-          result?.checklist || {
-            id: checklist.id || checklist._id,
-            status: "CoCheckerReview",
-            message: "Checklist submitted to Co-Checker",
-          },
-        );
+        const updatedChecklistData = result?.checklist ||  {
+          id: checklist.id || checklist._id,
+          dclNo: checklist.dclNo,
+          status: "CoCheckerReview",
+          documents: nestedDocuments,
+          message: "Checklist submitted to Co-Checker",
+        };
+        
+        console.log("🔄 Calling onChecklistUpdate with:", updatedChecklistData);
+        onChecklistUpdate(updatedChecklistData);
+      }
+
+      // ✅ NEW: Trigger refetch to ensure frontend has latest data from backend
+      if (onRefetchNeeded) {
+        console.log("🔄 Triggering refetch after successful submission");
+        onRefetchNeeded();
       }
 
       return result;

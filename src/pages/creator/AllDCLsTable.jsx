@@ -1,5 +1,5 @@
 import { Table, Tag, Spin, Empty } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   FileTextOutlined,
   CustomerServiceOutlined,
@@ -17,11 +17,6 @@ import {
   SyncOutlined,
 } from "@ant-design/icons";
 
-// Import all modal components
-// import ReviewChecklistModal from "../../components/modals/CreatorReviewChecklistModal";
-// import CheckerReviewChecklistModal from "../../components/modals/CheckerReviewChecklistModal";
-// import CompletedChecklistModal from "../../components/modals/CompletedChecklistModal";
-// import CreatorCompletedChecklistModal from "../../components/modals/CreatorCompletedChecklistModal";
 import ReviewChecklistModal from "../../components/modals/ReviewChecklistModalComponents/ReviewChecklistModal";
 import RmReviewChecklistModal from "../../components/modals/RmReviewChecklistModalComponents/RmReviewChecklistModal";
 import CheckerReviewChecklistModal from "../../components/modals/CheckerReviewChecklistModalComponents/CheckerReviewChecklistModal";
@@ -81,11 +76,27 @@ const CHECKLIST_STATUS_META = {
   },
 };
 
+// ✅ Helper function to normalize status to lowercase with underscores
+const normalizeStatus = (status) => {
+  if (!status) return null;
+  
+  // Convert CamelCase to snake_case and lowercase
+  return status
+    .replace(/([A-Z])/g, "_$1")
+    .toLowerCase()
+    .replace(/^_/, "");
+};
+
 const renderChecklistStatus = (status) => {
-  const meta = CHECKLIST_STATUS_META[status];
+  const normalizedStatus = normalizeStatus(status);
+  const meta = CHECKLIST_STATUS_META[normalizedStatus] || CHECKLIST_STATUS_META[status];
 
   if (!meta) {
-    return <Tag color="default">Unknown</Tag>;
+    return (
+      <Tag color="default" title={`Status: ${status}`}>
+        {status || "Unknown"}
+      </Tag>
+    );
   }
 
   return (
@@ -101,6 +112,18 @@ const renderChecklistStatus = (status) => {
     >
       {meta.label}
     </Tag>
+  );
+};
+
+// ✅ Helper function to get assigned checker info
+const getCheckerInfo = (record) => {
+  // Priority: assignedToCoChecker → assignedChecker → checkerAssigned → coChecker
+  return (
+    record.assignedToCoChecker ||
+    record.assignedChecker ||
+    record.checkerAssigned ||
+    record.coChecker ||
+    null
   );
 };
 
@@ -139,6 +162,25 @@ export default function AllDCLsTable({ filters }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data = [], isLoading } = useGetAllCoCreatorChecklistsQuery();
+
+  // 🔍 Debug logging to identify data structure from API
+  useEffect(() => {
+    if (data?.length > 0) {
+      const firstItem = data[0];
+      console.log("📊 AllDCLsTable API Response (First Item):", {
+        keys: Object.keys(firstItem),
+        data: firstItem,
+        checkerFields: {
+          approvedBy: firstItem?.approvedBy,
+          assignedChecker: firstItem?.assignedChecker,
+          checkerAssigned: firstItem?.checkerAssigned,
+          checker: firstItem?.checker,
+        },
+        status: firstItem?.status,
+        statusType: typeof firstItem?.status,
+      });
+    }
+  }, [data]);
 
   const filtered = data.filter((d) =>
     !filters.searchText
@@ -180,7 +222,6 @@ export default function AllDCLsTable({ filters }) {
             gap: 8,
           }}
         >
-          <FileTextOutlined style={{ color: SECONDARY_PURPLE }} />
           {text}
         </div>
       ),
@@ -209,7 +250,8 @@ export default function AllDCLsTable({ filters }) {
             gap: 6,
           }}
         >
-          <CustomerServiceOutlined style={{ fontSize: 12 }} />
+           <UserOutlined style={{ color: PRIMARY_BLUE, fontSize: 12 }} />
+          {/* <CustomerServiceOutlined style={{ fontSize: 12 }} /> */}
           {text}
         </div>
       ),
@@ -246,22 +288,46 @@ export default function AllDCLsTable({ filters }) {
     },
     {
       title: "Checker - Approver",
-      dataIndex: "approvedBy",
-      width: 140,
-      render: (approver) => (
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <UserOutlined style={{ color: PRIMARY_BLUE, fontSize: 12 }} />
-          <span
-            style={{
-              color: PRIMARY_BLUE,
-              fontWeight: 500,
-              fontSize: 13,
-            }}
-          >
-            {approver?.name || "N/A"}
-          </span>
-        </div>
-      ),
+      dataIndex: "assignedToCoChecker", // primary field to check for checker info
+      width: 160,
+      render: (checkerValue, record) => {
+        // 🔍 Debug: Log what we're getting
+        console.log("🔍 Checker Column Debug:", {
+          checkerValue,
+          record_assignedToCoChecker: record?.assignedToCoChecker,
+          record_assignedChecker: record?.assignedChecker,
+          record_approvedBy: record?.approvedBy,
+          record_checkerAssigned: record?.checkerAssigned,
+          record_checker: record?.checker,
+          allKeys: Object.keys(record || {}),
+        });
+        
+        // ✅ Use helper to get assigned checker info from various field names
+        const approver = getCheckerInfo(record);
+        
+        // ✅ Handle different possible name field variations
+        const checkerName = 
+          approver?.name || 
+          approver?.checkerName || 
+          approver?.fullName || 
+          approver?.userName ||
+          "Not Assigned";
+        
+        return (
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <UserOutlined style={{ color: PRIMARY_BLUE, fontSize: 12 }} />
+            <div
+              style={{
+                color: PRIMARY_BLUE,
+                fontWeight: 600,
+                fontSize: 13,
+              }}
+            >
+              {checkerName}
+            </div>
+          </div>
+        );
+      },
     },
     {
       title: "Docs",
@@ -307,7 +373,7 @@ export default function AllDCLsTable({ filters }) {
     {
       title: "Status",
       dataIndex: "status",
-      width: 140,
+      width: 150,
       fixed: "right",
       render: (status) => renderChecklistStatus(status),
     },
@@ -329,7 +395,7 @@ export default function AllDCLsTable({ filters }) {
         dataSource={filtered}
         columns={columns}
         pagination={{ pageSize: 10 }}
-        scroll={{ x: 1300 }}
+        scroll={{ x: 1400 }}
         onRow={(record) => ({
           onClick: () => handleRowClick(record),
         })}
@@ -359,11 +425,22 @@ const customTableStyles = `
   background-color: #f7f7f7 !important;
   color: #164679 !important;
   font-weight: 700;
-  padding: 14px 12px !important;
+  padding: 16px 12px !important;
   border-bottom: 3px solid #52c41a !important;
+  text-align: left !important;
+  font-size: 13px;
+}
+.creator-completed-table .ant-table-tbody > tr {
+  transition: background-color 0.2s ease;
 }
 .creator-completed-table .ant-table-tbody > tr:hover > td {
   background-color: rgba(82, 196, 26, 0.1) !important;
   cursor: pointer;
+}
+.creator-completed-table .ant-table-tbody > tr > td {
+  padding: 14px 12px !important;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0 !important;
+  vertical-align: middle;
 }
 `;

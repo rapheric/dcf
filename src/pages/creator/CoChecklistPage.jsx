@@ -878,7 +878,15 @@ const CoChecklistPage = ({ userId }) => {
         <ReviewChecklistModal
           checklist={selectedChecklist}
           open={!!selectedChecklist}
-          onClose={() => setSelectedChecklist(null)}
+          onClose={() => {
+            setSelectedChecklist(null);
+            refetch && refetch(); // ✅ Refresh checklist data when modal closes
+          }}
+          onChecklistUpdate={(updatedChecklist) => {
+            // ✅ Update local state AND refetch to get fresh data from server
+            setSelectedChecklist(updatedChecklist);
+            refetch && refetch();
+          }}
         />
       )}
     </div>

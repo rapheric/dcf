@@ -195,7 +195,7 @@ const MyQueue = ({ userId }) => {
     {
       title: "DCL No",
       dataIndex: "dclNo",
-      width: 140,
+      width: 120,
       render: (text) => (
         <div
           style={{
@@ -206,7 +206,6 @@ const MyQueue = ({ userId }) => {
             gap: 8,
           }}
         >
-          <FileTextOutlined style={{ color: SECONDARY_BLUE }} />
           {text}
         </div>
       ),
@@ -224,7 +223,7 @@ const MyQueue = ({ userId }) => {
     {
       title: "Customer Name",
       dataIndex: "customerName",
-      width: 160,
+      width: 80,
       render: (text) => (
         <div
           style={{
@@ -235,25 +234,23 @@ const MyQueue = ({ userId }) => {
             gap: 6,
           }}
         >
-          <CustomerServiceOutlined style={{ fontSize: 12 }} />
+         <UserOutlined style={{ color: SECONDARY_BLUE, fontSize: 12 }} />
           {text}
         </div>
       ),
     },
     {
-      title: "IBPS No", // ✅ New IBPS NO column
+      title: "IBPS No",
       dataIndex: "ibpsNo",
-      width: 120,
+      width: 85,
       render: (text) => (
         <div
           style={{
             color: SECONDARY_BLUE,
             fontWeight: 500,
             fontFamily: "monospace",
-            backgroundColor: text ? "rgba(181, 211, 52, 0.1)" : "transparent",
-            padding: "2px 6px",
             borderRadius: 4,
-            fontSize: 12,
+            fontSize: 12, 
             textAlign: "center",
           }}
         >
@@ -265,7 +262,7 @@ const MyQueue = ({ userId }) => {
     {
       title: "Loan Type",
       dataIndex: "loanType",
-      width: 120,
+      width: 110,
       render: (text) => (
         <div style={{ fontSize: 12, color: "#666", fontWeight: 500 }}>
           {text}
@@ -275,7 +272,7 @@ const MyQueue = ({ userId }) => {
     {
       title: "Creator",
       dataIndex: "createdBy",
-      width: 120,
+      width: 115,
       render: (creator) => (
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <UserOutlined style={{ color: SECONDARY_BLUE, fontSize: 12 }} />
@@ -290,7 +287,7 @@ const MyQueue = ({ userId }) => {
     {
       title: "RM",
       dataIndex: "assignedToRM",
-      width: 120,
+      width: 115,
       render: (rm) => (
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <UserOutlined style={{ color: SECONDARY_BLUE, fontSize: 12 }} />
@@ -305,7 +302,7 @@ const MyQueue = ({ userId }) => {
     {
       title: "Docs",
       dataIndex: "documents",
-      width: 70,
+      width: 80,
       align: "center",
       render: (docs) => {
         const totalDocs =
@@ -334,13 +331,13 @@ const MyQueue = ({ userId }) => {
     {
       title: "Status",
       dataIndex: "displayStatus",
-      width: 120,
+      width: 135,
       render: (status) => renderStatusTag(status),
     },
     {
       title: "SLA",
       dataIndex: "slaExpiry",
-      width: 90,
+      width: 100,
       fixed: "right",
       render: (date) => {
         const daysLeft = dayjs(date).diff(dayjs(), "days");
@@ -514,7 +511,7 @@ const MyQueue = ({ userId }) => {
               showTotal: (total, range) =>
                 `${range[0]}-${range[1]} of ${total} DCLs`,
             }}
-            scroll={{ x: 1100 }}
+            scroll={{ x: 1130 }}
             onRow={(record) => ({
               onClick: () => {
                 setSelectedChecklist(record);

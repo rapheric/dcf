@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Routes, Route, useLocation } from "react-router-dom";
 import {
   CheckCircle,
@@ -23,8 +23,24 @@ import Reports from "../../pages/creator/Reports";
 
 const RmLayout = ({ userId, rmId }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedKey, setSelectedKey] = useState("myqueue");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // 🔄 Sync selectedKey with current route
+  useEffect(() => {
+    const pathname = location.pathname;
+    
+    if (pathname.includes("/deferrals")) {
+      setSelectedKey("deferral");
+    } else if (pathname.includes("/completed")) {
+      setSelectedKey("completed");
+    } else if (pathname.includes("/reports")) {
+      setSelectedKey("reports");
+    } else if (pathname.includes("/myqueue") || pathname === "/rm" || pathname === "/rm/") {
+      setSelectedKey("myqueue");
+    }
+  }, [location.pathname]);
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
 
@@ -54,13 +70,14 @@ const RmLayout = ({ userId, rmId }) => {
   const handleClick = (e) => {
     console.log("Menu clicked:", e.key);
 
+    setSelectedKey(e.key);
+
     // Handle deferral route
     if (e.key === "deferral") {
       navigate("/rm/deferrals/pending");
       return;
     }
 
-    setSelectedKey(e.key);
     navigate(`/rm/${e.key}`);
   };
 
