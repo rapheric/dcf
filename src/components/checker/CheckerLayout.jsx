@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Inbox, CheckCircle, BarChart2 } from "lucide-react";
+import { getSidebarWidth } from "../../utils/sidebarUtils";
 
 import Navbar from "../Navbar";
 import SharedSidebar from "../common/SharedSidebar";
@@ -18,7 +19,21 @@ const CheckerLayout = () => {
 
   const navigate = useNavigate();
   const [selectedKey, setSelectedKey] = useState("myQueue");
-  const [collapsed, setCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 375);
+  const [collapsed, setCollapsed] = useState(window.innerWidth < 768);
+
+  // Handle responsive sidebar behavior
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 375;
+      const tablet = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setCollapsed(tablet);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
@@ -48,6 +63,8 @@ const CheckerLayout = () => {
   const handleClick = (e) => {
     setSelectedKey(e.key);
     navigate(`/cochecker/${e.key}`);
+    // Close sidebar on mobile when menu item is clicked
+    if (isMobile) setCollapsed(true);
   };
 
   return (
@@ -55,10 +72,30 @@ const CheckerLayout = () => {
       style={{
         display: "flex",
         height: "100vh",
+        width: "100%",
+        margin: 0,
+        padding: 0,
         overflow: "hidden",
         background: "#f0f2f5",
+        boxSizing: "border-box",
       }}
     >
+      {/* Overlay for mobile sidebar */}
+      {isMobile && !collapsed && (
+        <div
+          onClick={() => setCollapsed(true)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 99,
+          }}
+        />
+      )}
+      
       <SharedSidebar
         selectedKey={selectedKey}
         setSelectedKey={setSelectedKey}
@@ -74,21 +111,27 @@ const CheckerLayout = () => {
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          marginLeft: collapsed ? 80 : 300,
+          marginLeft: isMobile ? 0 : getSidebarWidth(collapsed),
+          width: isMobile ? "100%" : `calc(100% - ${getSidebarWidth(collapsed)}px)`,
+          maxWidth: "100vw",
           transition: "all 0.2s cubic-bezier(0.2, 0, 0, 1) 0s",
-          width: `calc(100% - ${collapsed ? 80 : 300}px)`,
           height: "100vh",
           overflow: "hidden",
+          boxSizing: "border-box",
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
 
         <div
           style={{
-            padding: "24px",
+            padding: isMobile ? "8px 2px" : "24px",
+            margin: 0,
+            width: "100%",
             flex: 1,
             overflowY: "auto",
+            overflowX: isMobile ? "auto" : "hidden",
             background: "#f0f2f5",
+            boxSizing: "border-box",
           }}
         >
           <Routes>
@@ -110,7 +153,7 @@ const CheckerLayout = () => {
           style={{
             background: "#ffffff",
             borderTop: "1px solid #e5e7eb",
-            padding: "16px 24px",
+            padding: isMobile ? "12px 16px" : "16px 24px",
             textAlign: "center",
             fontSize: 12,
             color: "#6b7280",

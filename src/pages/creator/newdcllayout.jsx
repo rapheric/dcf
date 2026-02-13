@@ -361,7 +361,7 @@ const MyQueue = ({ userId = "creator_current" }) => {
   `;
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: "8px 2px", boxSizing: "border-box" }}>
       <style>{customTableStyles}</style>
 
       {/* Header */}

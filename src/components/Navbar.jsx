@@ -37,27 +37,31 @@ const Navbar = ({ toggleSidebar }) => {
     },
   ];
 
+  // Responsive values
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 375;
+  const navPadding = isMobile ? '0 8px' : '0 24px';
+
   return (
     <div
       style={{
-        height: 60,
+        height: isMobile ? 56 : 60,
         background: "#fff",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        padding: "0 24px",
+        padding: navPadding,
         boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
         borderBottom: "1px solid #f0f0f0",
         zIndex: 1000,
-        flexShrink: 0, // Ensure it doesn't shrink in flex columns
+        flexShrink: 0,
       }}
     >
       <div onClick={toggleSidebar} style={{ cursor: "pointer" }}>
-        <MenuOutlined style={{ fontSize: 24 }} />
+        <MenuOutlined style={{ fontSize: isMobile ? 20 : 24 }} />
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <BellOutlined style={{ fontSize: 20, cursor: "pointer" }} />
+      <div style={{ display: "flex", alignItems: "center", gap: isMobile ? 12 : 20 }}>
+        <BellOutlined style={{ fontSize: isMobile ? 18 : 20, cursor: "pointer" }} />
 
         <Dropdown
           menu={{ items: menuItems }}
@@ -72,8 +76,8 @@ const Navbar = ({ toggleSidebar }) => {
               cursor: "pointer",
             }}
           >
-            <UserOutlined style={{ fontSize: 18 }} />
-            <span style={{ fontWeight: 500 }}>{user?.name || "User"}</span>
+            <UserOutlined style={{ fontSize: isMobile ? 16 : 18 }} />
+            {!isMobile && <span style={{ fontWeight: 500 }}>{user?.name || "User"}</span>}
           </div>
         </Dropdown>
       </div>

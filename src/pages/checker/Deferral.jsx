@@ -2177,8 +2177,9 @@ const Deferrals = ({ userId }) => {
   const renderFilters = () => (
     <Card
       style={{
-        marginBottom: 16,
-        background: "#fafafa",
+        marginBottom: 12,
+        background:"green",
+        // background: "#fafafa",
         border: `1px solid ${PRIMARY_BLUE}20`,
       }}
       size="small"
@@ -2409,70 +2410,6 @@ const Deferrals = ({ userId }) => {
   return (
     <div style={{ padding: 24 }}>
       <style>{customTableStyles}</style>
-
-      {/* Header */}
-      <Card
-        style={{
-          marginBottom: 24,
-          borderRadius: 8,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          borderLeft: `4px solid ${ACCENT_LIME}`,
-        }}
-        styles={{ body: { padding: 16 } }}
-      >
-        <Row justify="space-between" align="middle">
-          <Col>
-            <h2
-              style={{
-                margin: 0,
-                color: PRIMARY_BLUE,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              Deferral Management Dashboard
-              <Badge
-                count={deferrals.length}
-                style={{
-                  backgroundColor: ACCENT_LIME,
-                  fontSize: 12,
-                }}
-              />
-            </h2>
-            <p style={{ margin: "4px 0 0", color: "#666", fontSize: 14 }}>
-              {activeTab === "pending"
-                ? "Review and manage pending deferral requests from Relationship Managers"
-                : activeTab === "returned"
-                  ? "View deferrals returned for re-work"
-                  : activeTab === "approved"
-                    ? "View fully approved deferral requests"
-                    : "View closed deferrals"}
-            </p>
-          </Col>
-
-          <Col>
-            <Space>
-              <Tooltip title="Refresh">
-                <Button
-                  icon={<ReloadOutlined />}
-                  onClick={loadDeferrals}
-                  loading={loading}
-                />
-              </Tooltip>
-
-              <Tooltip title="Export Deferrals">
-                <Button
-                  icon={<DownloadOutlined />}
-                  onClick={exportDeferrals}
-                  disabled={filteredDeferrals.length === 0}
-                />
-              </Tooltip>
-            </Space>
-          </Col>
-        </Row>
-      </Card>
-
       {/* Filters */}
       {renderFilters()}
 

@@ -13,6 +13,7 @@ const CreatorSidebar = ({
   setSelectedKey,
   collapsed,
   toggleCollapse,
+  onMenuItemClick,
 }) => {
   const menuItems = [
     {
@@ -48,6 +49,7 @@ const CreatorSidebar = ({
       setSelectedKey={setSelectedKey}
       collapsed={collapsed}
       toggleCollapse={toggleCollapse}
+      onMenuItemClick={onMenuItemClick}
       menuItems={menuItems}
       title="Creator Dashboard"
     />

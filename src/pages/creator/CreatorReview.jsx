@@ -40,7 +40,7 @@ const CreatorReview = () => {
 
   if (!checklist) {
     return (
-      <div style={{ padding: 24 }}>
+      <div style={{ padding: "8px 2px", boxSizing: "border-box" }}>
         <Text type="danger" strong>
           Checklist not found — invalid ID ({checklistId})
         </Text>
@@ -162,8 +162,8 @@ const CreatorReview = () => {
   ];
 
   return (
-    <div style={{ padding: 24, maxWidth: 1000, margin: "auto" }}>
-      <Button onClick={() => navigate("/MyQueue")} style={{ marginBottom: 24 }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth <= 375 ? "8px 2px" : "24px", maxWidth: 1000, margin: "auto", boxSizing: "border-box" }}>
+      <Button onClick={() => navigate("/MyQueue")} style={{ marginBottom: typeof window !== 'undefined' && window.innerWidth <= 375 ? 8 : 24 }}>
         ← Back to My Queue
       </Button>
 

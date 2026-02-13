@@ -60,14 +60,7 @@ const Completed = ({ userId }) => {
     refetch,
   } = useGetAllCoCreatorChecklistsQuery();
 
-  console.log("All Checklists in Completed:", checklists);
 
-  /**
-   * COMPLETED LOGIC
-   * ----------------
-   * This is the inverse of MyQueue.
-   * Anything that MyQueue filters OUT appears here.
-   */
   const filteredData = useMemo(() => {
     if (!checklists) return [];
 
@@ -75,9 +68,6 @@ const Completed = ({ userId }) => {
       .filter((c) => (c.assignedToRM?.id || c.assignedToRM?._id) === userId)
       .filter((c) => {
         const status = (c.status || "").toLowerCase();
-
-        // MyQueue REMOVES approved & rejected
-        // Completed MUST SHOW them
         return status === "approved" || status === "completed";
       })
 
@@ -93,8 +83,6 @@ const Completed = ({ userId }) => {
         );
       });
   }, [checklists, userId, searchText]);
-
-  console.log("filteredCompleted:", filteredData);
 
   const clearFilters = () => setSearchText("");
 
@@ -124,7 +112,7 @@ const Completed = ({ userId }) => {
 
   const columns = [
     {
-      title: "DCL No",
+      title: "DCL Number",
       dataIndex: "dclNo",
       width: 140,
       render: (text) => (
@@ -137,13 +125,12 @@ const Completed = ({ userId }) => {
             gap: 8,
           }}
         >
-          <FileTextOutlined style={{ color: SECONDARY_BLUE }} />
           {text}
         </div>
       ),
     },
     {
-      title: "Customer No",
+      title: "Customer Number",
       dataIndex: "customerNumber",
       width: 110,
       render: (text) => (
@@ -166,14 +153,14 @@ const Completed = ({ userId }) => {
             gap: 6,
           }}
         >
-          <CustomerServiceOutlined style={{ fontSize: 12 }} />
+         <UserOutlined style={{ color: SECONDARY_BLUE, fontSize: 12 }} />
           {text}
         </div>
       ),
     },
 
     {
-      title: "IBPS No", // ✅ New IBPS NO column
+      title: "IBPS No", 
       dataIndex: "ibpsNo",
       width: 120,
       render: (text) => (
@@ -181,12 +168,7 @@ const Completed = ({ userId }) => {
           style={{
             color: SECONDARY_BLUE,
             fontWeight: 500,
-            fontFamily: "monospace",
-            backgroundColor: text ? "rgba(181, 211, 52, 0.1)" : "transparent",
-            padding: "2px 6px",
-            borderRadius: 4,
-            fontSize: 12,
-            textAlign: "center",
+            fontSize: 13,
           }}
         >
           {text || "Not set"}
@@ -198,7 +180,7 @@ const Completed = ({ userId }) => {
       dataIndex: "loanType",
       width: 120,
       render: (text) => (
-        <div style={{ fontSize: 12, color: "#666", fontWeight: 500 }}>
+        <div style={{ fontSize: 13, color: "#666", fontWeight: 500 }}>
           {text}
         </div>
       ),
@@ -276,6 +258,26 @@ const Completed = ({ userId }) => {
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(43, 28, 103, 0.08);
       border: 1px solid #e0e0e0;
+    }
+    .rm-completed-table .ant-table-thead > tr > th {
+      background-color: #f7f7f7 !important;
+      color: ${PRIMARY_PURPLE} !important;
+      font-weight: 700;
+      font-size: 13px;
+      padding: 14px 12px !important;
+      border-bottom: 3px solid ${ACCENT_LIME} !important;
+      border-right: none !important;
+    }
+    .rm-completed-table .ant-table-tbody > tr > td {
+      border-bottom: 1px solid #f0f0f0 !important;
+      border-right: none !important;
+      padding: 12px 12px !important;
+      font-size: 13px;
+      color: #374151;
+    }
+    .rm-completed-table .ant-table-tbody > tr.ant-table-row:hover > td {
+      background-color: rgba(43, 28, 103, 0.1) !important;
+      cursor: pointer;
     }
   `;
 

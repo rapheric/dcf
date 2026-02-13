@@ -1,6 +1,7 @@
 import React from "react";
 import { Menu } from "antd";
 import ncbabanklogo from "../../assets/ncbabanklogo.png";
+import { getSidebarWidth } from "../../utils/sidebarUtils";
 
 const SIDEBAR_BG = "#2B1C67";
 const BORDER_COLOR = "rgba(255,255,255,0.15)";
@@ -31,7 +32,7 @@ const SharedSidebar = ({
                 top: 0,
                 left: 0,
                 height: "100vh",
-                width: collapsed ? 80 : 300,
+                width: getSidebarWidth(collapsed),
                 background: SIDEBAR_BG,
                 transition: "width 0.2s cubic-bezier(0.2, 0, 0, 1) 0s",
                 display: "flex",

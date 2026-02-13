@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu } from "antd";
 import { useNavigate, Routes, Route, useLocation } from "react-router-dom";
 import { ListChecks, Inbox, Clock, BarChart2, User } from "lucide-react";
+import { getSidebarWidth } from "../../utils/sidebarUtils";
 
 // Import available Approver page components
 import MyQueue from "../../pages/approver/MyQueue";
@@ -15,6 +16,8 @@ const Sidebar = ({
   collapsed,
   toggleCollapse,
   navigate,
+  isMobile,
+  setSidebarCollapsed,
 }) => {
   const location = useLocation();
 
@@ -22,6 +25,8 @@ const Sidebar = ({
     console.log("Menu clicked:", e.key);
     setSelectedKey(e.key);
     navigate(`/approver/${e.key}`);
+    // Close sidebar on mobile when menu item is clicked
+    if (isMobile) setSidebarCollapsed(true);
   };
 
   // Determine selected key from path
@@ -36,7 +41,7 @@ const Sidebar = ({
   return (
     <div
       style={{
-        width: collapsed ? 80 : 260,
+        width: getSidebarWidth(collapsed),
         background: "#3A2A82",
         color: "white",
         transition: "0.25s ease",
@@ -110,8 +115,21 @@ const Sidebar = ({
 const ApproverLayout = ({ userId }) => {
   const navigate = useNavigate();
   const [selectedKey, setSelectedKey] = useState("queue");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const sidebarWidth = sidebarCollapsed ? 80 : 300;
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 375);
+
+  // Handle responsive sidebar behavior
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 375;
+      const tablet = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setSidebarCollapsed(tablet);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleSidebar = () => setSidebarCollapsed(!sidebarCollapsed);
 
@@ -120,10 +138,30 @@ const ApproverLayout = ({ userId }) => {
       style={{
         display: "flex",
         height: "100vh",
+        width: "100%",
+        margin: 0,
+        padding: 0,
         overflow: "hidden",
         background: "#f0f2f5",
+        boxSizing: "border-box",
       }}
     >
+      {/* Overlay for mobile sidebar */}
+      {isMobile && !sidebarCollapsed && (
+        <div
+          onClick={() => setSidebarCollapsed(true)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 99,
+          }}
+        />
+      )}
+
       <div style={{ position: "fixed", top: 0, left: 0, zIndex: 1000 }}>
         <Sidebar
           selectedKey={selectedKey}
@@ -131,6 +169,8 @@ const ApproverLayout = ({ userId }) => {
           collapsed={sidebarCollapsed}
           toggleCollapse={toggleSidebar}
           navigate={navigate}
+          isMobile={isMobile}
+          setSidebarCollapsed={setSidebarCollapsed}
         />
       </div>
       <div
@@ -138,20 +178,26 @@ const ApproverLayout = ({ userId }) => {
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          marginLeft: sidebarWidth,
+          marginLeft: isMobile ? 0 : getSidebarWidth(sidebarCollapsed),
+          width: isMobile ? "100%" : `calc(100% - ${getSidebarWidth(sidebarCollapsed)}px)`,
+          maxWidth: "100vw",
           height: "100vh",
           overflow: "hidden",
-          width: `calc(100% - ${sidebarWidth}px)`,
           transition: "all 0.2s cubic-bezier(0.2, 0, 0, 1) 0s",
+          boxSizing: "border-box",
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
         <div
           style={{
-            padding: "24px",
+            padding: isMobile ? "8px 2px" : "24px",
+            margin: 0,
+            width: "100%",
             flex: 1,
             overflowY: "auto",
+            overflowX: isMobile ? "auto" : "hidden",
             background: "#f0f2f5",
+            boxSizing: "border-box",
           }}
         >
           <Routes>

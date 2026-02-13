@@ -421,15 +421,23 @@ const customTableStyles = `
   box-shadow: 0 10px 30px rgba(22, 70, 121, 0.08);
   border: 1px solid #e0e0e0;
 }
+
+/* ✅ Thick green line below header - Professional separator */
 .creator-completed-table .ant-table-thead > tr > th {
   background-color: #f7f7f7 !important;
   color: #164679 !important;
   font-weight: 700;
   padding: 16px 12px !important;
-  border-bottom: 3px solid #52c41a !important;
+  border-bottom: 4px solid #52c41a !important;
   text-align: left !important;
   font-size: 13px;
 }
+
+/* ✅ Add thick green separator line between header and body */
+.creator-completed-table .ant-table-thead {
+  border-bottom: 4px solid #52c41a;
+}
+
 .creator-completed-table .ant-table-tbody > tr {
   transition: background-color 0.2s ease;
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Routes, Route, useLocation } from "react-router-dom";
+import { getSidebarWidth } from "../../utils/sidebarUtils";
 import {
   CheckCircle,
   Inbox,
@@ -25,7 +26,21 @@ const RmLayout = ({ userId, rmId }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedKey, setSelectedKey] = useState("myqueue");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 375);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(window.innerWidth < 768);
+
+  // Handle responsive sidebar behavior
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 375;
+      const tablet = window.innerWidth < 768;
+      setIsMobile(mobile);
+      setSidebarCollapsed(tablet);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // 🔄 Sync selectedKey with current route
   useEffect(() => {
@@ -75,10 +90,12 @@ const RmLayout = ({ userId, rmId }) => {
     // Handle deferral route
     if (e.key === "deferral") {
       navigate("/rm/deferrals/pending");
-      return;
+    } else {
+      navigate(`/rm/${e.key}`);
     }
 
-    navigate(`/rm/${e.key}`);
+    // Close sidebar on mobile when menu item is clicked
+    if (isMobile) setSidebarCollapsed(true);
   };
 
   return (
@@ -86,10 +103,30 @@ const RmLayout = ({ userId, rmId }) => {
       style={{
         display: "flex",
         height: "100vh",
+        width: "100%",
+        margin: 0,
+        padding: 0,
         overflow: "hidden",
         background: "#f0f2f5",
+        boxSizing: "border-box",
       }}
     >
+      {/* Overlay for mobile sidebar */}
+      {isMobile && !sidebarCollapsed && (
+        <div
+          onClick={() => setSidebarCollapsed(true)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+            zIndex: 99,
+          }}
+        />
+      )}
+      
       <SharedSidebar
         selectedKey={selectedKey}
         setSelectedKey={setSelectedKey}
@@ -99,25 +136,37 @@ const RmLayout = ({ userId, rmId }) => {
         menuItems={menuItems}
         title="RM Dashboard"
       />
+      
+      {/* Calculate sidebar width based on screen size */}
+      {/* < 768px: Fully collapsed/hidden */}
+      {/* 768px - 1099px: Half size (40→150px) */}
+      {/* >= 1100px: Full size (80→300px) */}
+      
       <div
         style={{
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          marginLeft: sidebarCollapsed ? 80 : 300,
+          marginLeft: isMobile ? 0 : getSidebarWidth(sidebarCollapsed),
+          width: isMobile ? "100%" : `calc(100% - ${getSidebarWidth(sidebarCollapsed)}px)`,
+          maxWidth: "100vw",
           transition: "all 0.2s cubic-bezier(0.2, 0, 0, 1) 0s",
-          width: `calc(100% - ${sidebarCollapsed ? 80 : 300}px)`,
           height: "100vh",
           overflow: "hidden",
+          boxSizing: "border-box",
         }}
       >
         <Navbar toggleSidebar={toggleSidebar} />
         <div
           style={{
-            padding: "24px",
+            padding: isMobile ? "8px 2px" : "24px",
+            margin: 0,
+            width: "100%",
             flex: 1,
             overflowY: "auto",
+            overflowX: isMobile ? "auto" : "hidden",
             background: "#f0f2f5",
+            boxSizing: "border-box",
           }}
         >
           <Routes>

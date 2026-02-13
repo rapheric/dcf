@@ -120,12 +120,11 @@ const Myqueue = () => {
   /* ---------------- TABLE COLUMNS ---------------- */
   const getColumns = (isCurrentTab) => [
     {
-      title: "DCL No",
+      title: "DCL Number",
       dataIndex: "dclNo",
       width: 140,
       render: (text) => (
         <div style={{ fontWeight: "bold", color: PRIMARY_BLUE }}>
-          <FileTextOutlined style={{ marginRight: 6 }} />
           {text}
         </div>
       ),
@@ -144,7 +143,7 @@ const Myqueue = () => {
       width: 180,
       render: (text) => (
         <span style={{ fontWeight: 600, color: PRIMARY_BLUE }}>
-          <CustomerServiceOutlined style={{ marginRight: 6 }} />
+           <UserOutlined style={{ marginRight: 6 }} />
           {text}
         </span>
       ),
@@ -270,27 +269,18 @@ const Myqueue = () => {
   `;
 
   /* ---------------- RENDER ---------------- */
+  // Responsive padding
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 375;
+  const padding = isMobile ? "8px 2px" : "24px";
+  const cardMargin = isMobile ? 8 : 16;
+
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding, boxSizing: "border-box" }}>
       <style>{customTableStyles}</style>
-
-      {/* HEADER */}
-      <Card
-        style={{
-          marginBottom: 24,
-          borderLeft: `4px solid ${ACCENT_LIME}`,
-        }}
-      >
-        <h2 style={{ margin: 0, color: PRIMARY_BLUE }}>My Queue</h2>
-        <p style={{ marginTop: 4, color: "#666" }}>
-          Review pending and completed checklists
-        </p>
-      </Card>
-
       {/* FILTER */}
-      <Card size="small" style={{ marginBottom: 16 }}>
-        <Row gutter={16}>
-          <Col md={12}>
+      <Card size="small" style={{ marginBottom: cardMargin }}>
+        <Row gutter={[12, 12]}>
+          <Col xs={24} sm={12} md={12}>
             <Input
               prefix={<SearchOutlined />}
               placeholder="Search DCL / Customer / Loan"

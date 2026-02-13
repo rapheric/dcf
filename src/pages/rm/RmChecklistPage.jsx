@@ -53,37 +53,37 @@ const RmChecklistPage = ({ userId, mode = "queue" }) => {
   // Custom CSS for the table (UNCHANGED)
   // ------------------------------
   const customTableStyles = `
-    .ant-table-wrapper {
+    .rmchecklist-table .ant-table-wrapper {
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 10px 30px rgba(22, 70, 121, 0.08);
       border: 1px solid #e0e0e0;
     }
-    .ant-table-thead > tr > th {
+    .rmchecklist-table .ant-table-thead > tr > th {
       background-color: #f7f7f7 !important;
       color: ${PRIMARY_BLUE} !important;
       font-weight: 700;
       font-size: 15px;
       padding: 16px 16px !important;
-      border-bottom: 3px solid ${ACCENT_LIME} !important;
+      border-bottom: 3px solid #b5d334 !important;
       border-right: none !important;
     }
-    .ant-table-tbody > tr > td {
+    .rmchecklist-table .ant-table-tbody > tr > td {
       border-bottom: 1px solid #f0f0f0 !important;
       border-right: none !important;
       padding: 14px 16px !important;
       font-size: 14px;
       color: #333;
     }
-    .ant-table-tbody > tr.ant-table-row:hover > td {
+    .rmchecklist-table .ant-table-tbody > tr.ant-table-row:hover > td {
       background-color: rgba(181, 211, 52, 0.1) !important;
       cursor: pointer;
     }
-    .ant-pagination .ant-pagination-item-active {
-      background-color: ${ACCENT_LIME} !important;
-      border-color: ${ACCENT_LIME} !important;
+    .rmchecklist-table .ant-pagination .ant-pagination-item-active {
+      background-color: #b5d334 !important;
+      border-color: #b5d334 !important;
     }
-    .ant-pagination .ant-pagination-item-active a {
+    .rmchecklist-table .ant-pagination .ant-pagination-item-active a {
       color: ${PRIMARY_BLUE} !important;
       font-weight: 600;
     }
@@ -192,7 +192,7 @@ const RmChecklistPage = ({ userId, mode = "queue" }) => {
   ];
 
   return (
-    <div style={{ padding: 16 }}>
+    <div style={{ padding: 16 }} className="rmchecklist-table">
       {drawerOpen && (
         <ChecklistsPage
           open={drawerOpen}

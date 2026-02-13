@@ -6,6 +6,19 @@ html, body {
   height: 100%;
   width: 100%;
   overflow: hidden; /* Prevent page-level scroll */
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 :root {
@@ -28,5 +41,204 @@ body {
   transition: 0.25s ease-in-out;
 }
 
+/* ✅ UNIFORM TABLE STYLING - Applied to all tables for professional appearance */
+.ant-table-wrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(22, 70, 121, 0.08);
+  border: 1px solid #e0e0e0;
+}
 
-    @import "tailwindcss";
+/* ✅ Thick green line (4px) below table headers - Professional separator */
+.ant-table-thead > tr > th {
+  background-color: #f7f7f7 !important;
+  color: #164679 !important;
+  font-weight: 700;
+  padding: 16px 12px !important;
+  border-bottom: 4px solid #52c41a !important;
+  text-align: left !important;
+  font-size: 13px;
+}
+
+/* ✅ Table header section with thick green bottom border */
+.ant-table-thead {
+  border-bottom: 4px solid #52c41a;
+}
+
+/* ✅ Table body styling */
+.ant-table-tbody > tr {
+  transition: background-color 0.2s ease;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background-color: rgba(82, 196, 26, 0.1) !important;
+  cursor: pointer;
+}
+
+.ant-table-tbody > tr > td {
+  padding: 14px 12px !important;
+  font-size: 13px;
+  border-bottom: 1px solid #f0f0f0 !important;
+  vertical-align: middle;
+}
+
+/* ✅ MOBILE RESPONSIVE - Horizontal scrolling for tables on mobile (≤375px) */
+@media (max-width: 375px) {
+  /* Make content area scrollable horizontally */
+  .ant-table-wrapper {
+    min-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .ant-table {
+    min-width: 800px;
+  }
+  
+  .ant-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: block;
+  }
+  
+  .ant-table-body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Utility class for forced horizontal scrolling */
+.horizontal-scroll {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* ✅ MOBILE VIEW OPTIMIZATION - Content area horizontal scroll */
+@media (max-width: 375px) {
+  /* Force horizontal scrolling on table wrappers */
+  .ant-table-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Ensure main content area allows horizontal scroll */
+  main, [role="main"] {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* ✅ TABLE MOBILE OPTIMIZATION */
+  .ant-table {
+    font-size: 12px !important;
+    min-width: 600px;
+  }
+  
+  .ant-table-thead > tr > th {
+    padding: 8px 6px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    white-space: nowrap !important;
+  }
+  
+  .ant-table-tbody > tr > td {
+    padding: 6px 4px !important;
+    font-size: 12px !important;
+    word-break: break-word !important;
+  }
+  
+  .ant-table-cell {
+    padding: 6px 4px !important;
+    max-width: 80px;
+  }
+  
+  /* Reduce Tag size on mobile */
+  .ant-tag {
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+    margin: 2px 0 !important;
+  }
+  
+  /* Reduce Button size on mobile */
+  .ant-btn {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    height: auto !important;
+    min-height: 28px !important;
+  }
+  
+  .ant-btn-sm {
+    padding: 2px 4px !important;
+    font-size: 10px !important;
+    height: auto !important;
+    min-height: 24px !important;
+  }
+  
+  /* Reduce Input size on mobile */
+  .ant-input,
+  .ant-input-number,
+  .ant-picker {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    height: auto !important;
+    min-height: 28px !important;
+  }
+  
+  /* Reduce Select size on mobile */
+  .ant-select-selector {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+    height: auto !important;
+    min-height: 28px !important;
+  }
+  
+  /* Reduce Icon size on mobile */
+  .ant-table-cell .anticon {
+    font-size: 12px !important;
+  }
+  
+  /* Pagination mobile optimization */
+  .ant-pagination {
+    font-size: 11px !important;
+  }
+  
+  .ant-pagination-item,
+  .ant-pagination-item-active {
+    min-width: 24px !important;
+    height: 24px !important;
+    line-height: 24px !important;
+    font-size: 11px !important;
+  }
+  
+  /* Reduce Card padding on mobile */
+  .ant-card {
+    padding: 8px !important;
+  }
+  
+  .ant-card > .ant-card-head {
+    padding: 8px !important;
+  }
+  
+  .ant-card > .ant-card-body {
+    padding: 8px !important;
+  }
+  
+  /* Reduce Row gutter spacing on mobile */
+  .ant-row {
+    margin-left: -2px !important;
+    margin-right: -2px !important;
+  }
+  
+  /* Reduce column padding on mobile */
+  .ant-col {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+  
+  /* Reduce input/select padding */
+  .ant-input, 
+  .ant-select-selector,
+  .ant-picker {
+    padding: 4px 8px !important;
+  }
+}

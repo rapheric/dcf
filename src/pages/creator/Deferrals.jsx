@@ -439,7 +439,7 @@ const DeferralStatusAlert = ({ deferral }) => {
   return null;
 };
 
-const Deferrals = ({ userId }) => {
+const Deferrals = ({ userId, hideFilters = false }) => {
   // Get token from Redux
   const token = useSelector((state) => state.auth.token);
 
@@ -2291,53 +2291,57 @@ const Deferrals = ({ userId }) => {
   ];
 
   // Filter component
-  const renderFilters = () => (
-    <Card
-      style={{
-        marginBottom: 16,
-        background: "#fafafa",
-        border: `1px solid ${PRIMARY_BLUE}20`,
-      }}
-      size="small"
-    >
-      <Row gutter={[16, 16]} align="middle">
-        <Col xs={24} sm={12} md={8}>
-          <Input
-            placeholder="Search by DCL No, Deferral No, Customer Name or Number..."
-            prefix={<SearchOutlined />}
-            value={filters.search}
-            onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-            allowClear
-          />
-        </Col>
+  const renderFilters = () => {
+    if (hideFilters) return null;
 
-        <Col xs={24} sm={12} md={8}>
-          <RangePicker
-            style={{ width: "100%" }}
-            placeholder={["Start Date", "End Date"]}
-            value={filters.dateRange}
-            onChange={(dates) => setFilters({ ...filters, dateRange: dates })}
-            format="DD/MM/YYYY"
-          />
-        </Col>
+    return (
+      <Card
+        style={{
+          marginBottom: 8,
+          background: "#fafafa",
+          border: `1px solid ${PRIMARY_BLUE}20`,
+        }}
+        size="small"
+      >
+        <Row gutter={[12, 12]} align="middle">
+          <Col xs={24} sm={12} md={8}>
+            <Input
+              placeholder="Search by DCL No, Deferral No, Customer Name or Number..."
+              prefix={<SearchOutlined />}
+              value={filters.search}
+              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+              allowClear
+            />
+          </Col>
 
-        <Col xs={24} sm={12} md={2}>
-          <Button
-            onClick={() =>
-              setFilters({
-                priority: "all",
-                search: "",
-                dateRange: null,
-              })
-            }
-            style={{ width: "100%" }}
-          >
-            Clear
-          </Button>
-        </Col>
-      </Row>
-    </Card>
-  );
+          <Col xs={24} sm={12} md={8}>
+            <RangePicker
+              style={{ width: "100%" }}
+              placeholder={["Start Date", "End Date"]}
+              value={filters.dateRange}
+              onChange={(dates) => setFilters({ ...filters, dateRange: dates })}
+              format="DD/MM/YYYY"
+            />
+          </Col>
+
+          <Col xs={24} sm={12} md={2}>
+            <Button
+              onClick={() =>
+                setFilters({
+                  priority: "all",
+                  search: "",
+                  dateRange: null,
+                })
+              }
+              style={{ width: "100%" }}
+            >
+              Clear
+            </Button>
+          </Col>
+        </Row>
+      </Card>
+    );
+  };
 
   // Handle row click to open modal
   const handleRowClick = (record) => {
@@ -2554,84 +2558,21 @@ const Deferrals = ({ userId }) => {
   };
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: typeof window !== 'undefined' && window.innerWidth <= 375 ? "8px 2px" : "12px 16px", boxSizing: "border-box" }}>
       <style>{customTableStyles}</style>
-
-      {/* Header */}
-      <Card
-        style={{
-          marginBottom: 24,
-          borderRadius: 8,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          borderLeft: `4px solid ${ACCENT_LIME}`,
-        }}
-        styles={{ body: { padding: 16 } }}
-      >
-        <Row justify="space-between" align="middle">
-          <Col>
-            <h2
-              style={{
-                margin: 0,
-                color: PRIMARY_BLUE,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              Deferral Management Dashboard
-              <Badge
-                count={deferrals.length}
-                style={{
-                  backgroundColor: ACCENT_LIME,
-                  fontSize: 12,
-                }}
-              />
-            </h2>
-            <p style={{ margin: "4px 0 0", color: "#666", fontSize: 14 }}>
-              {activeTab === "pending"
-                ? "Review and manage pending deferral requests from Relationship Managers"
-                : activeTab === "returned"
-                  ? "View deferrals returned for re-work"
-                  : activeTab === "approved"
-                    ? "View fully approved deferral requests"
-                    : "View closed deferrals"}
-            </p>
-          </Col>
-
-          <Col>
-            <Space>
-              <Tooltip title="Refresh">
-                <Button
-                  icon={<ReloadOutlined />}
-                  onClick={loadDeferrals}
-                  loading={loading}
-                />
-              </Tooltip>
-
-              <Tooltip title="Export Deferrals">
-                <Button
-                  icon={<DownloadOutlined />}
-                  onClick={exportDeferrals}
-                  disabled={filteredDeferrals.length === 0}
-                />
-              </Tooltip>
-            </Space>
-          </Col>
-        </Row>
-      </Card>
 
       {/* Filters */}
       {renderFilters()}
 
       {/* Table Title + Tabs */}
-      <Divider style={{ margin: "12px 0" }}>
+      <Divider style={{ margin: "4px 0" }}>
         <span style={{ color: PRIMARY_BLUE, fontSize: 16, fontWeight: 600 }}>
           Deferrals
         </span>
       </Divider>
 
-      <div style={{ marginBottom: 12 }}>
-        <Tabs activeKey={activeTab} onChange={(k) => setActiveTab(k)}>
+      <div style={{ marginBottom: 4 }}>
+        <Tabs activeKey={activeTab} onChange={(k) => setActiveTab(k)} style={{ marginBottom: 0 }}>
           <Tabs.TabPane
             tab={`Pending Deferrals (${
               deferrals.filter((d) => {
@@ -2682,7 +2623,7 @@ const Deferrals = ({ userId }) => {
             key="closed"
           />
         </Tabs>
-        <div style={{ marginTop: 8, fontWeight: 700, color: PRIMARY_BLUE }}>
+        <div style={{ marginTop: 4, fontWeight: 700, color: PRIMARY_BLUE, fontSize: 13 }}>
           {activeTab === "pending"
             ? `Pending Deferrals (${filteredDeferrals.length} items)`
             : activeTab === "returned"

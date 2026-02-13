@@ -391,10 +391,22 @@ const Completed = () => {
     }
   };
 
+  // ✅ Helper function to get assigned checker info
+const getCheckerInfo = (record) => {
+  // Priority: assignedToCoChecker → assignedChecker → checkerAssigned → coChecker
+  return (
+    record.assignedToCoChecker ||
+    record.assignedChecker ||
+    record.checkerAssigned ||
+    record.coChecker ||
+    null
+  );
+};
+
   /* ---------------- TABLE COLUMNS ---------------- */
   const columns = [
     {
-      title: "DCL No",
+      title: "DCL Number",
       dataIndex: "dclNo",
       width: 140,
       fixed: "left",
@@ -408,7 +420,6 @@ const Completed = () => {
             gap: 8,
           }}
         >
-          <FileTextOutlined style={{ color: SECONDARY_PURPLE }} />
           {text}
         </div>
       ),
@@ -437,7 +448,7 @@ const Completed = () => {
             gap: 6,
           }}
         >
-          <CustomerServiceOutlined style={{ fontSize: 12 }} />
+          <UserOutlined style={{ color: PRIMARY_BLUE, fontSize: 12 }} />
           {text}
         </div>
       ),
@@ -472,25 +483,49 @@ const Completed = () => {
         </div>
       ),
     },
-    {
-      title: "Checker - Approver",
-      dataIndex: "approvedBy",
-      width: 140,
-      render: (approver) => (
-        <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <UserOutlined style={{ color: PRIMARY_BLUE, fontSize: 12 }} />
-          <span
-            style={{
-              color: PRIMARY_BLUE,
-              fontWeight: 500,
-              fontSize: 13,
-            }}
-          >
-            {approver?.name || "N/A"}
-          </span>
-        </div>
-      ),
-    },
+     {
+         title: "Checker/Approver",
+         dataIndex: "assignedToCoChecker", // primary field to check for checker info
+         width: 160,
+         render: (checkerValue, record) => {
+           // 🔍 Debug: Log what we're getting
+           console.log("🔍 Checker Column Debug:", {
+             checkerValue,
+             record_assignedToCoChecker: record?.assignedToCoChecker,
+             record_assignedChecker: record?.assignedChecker,
+             record_approvedBy: record?.approvedBy,
+             record_checkerAssigned: record?.checkerAssigned,
+             record_checker: record?.checker,
+             allKeys: Object.keys(record || {}),
+           });
+           
+           // ✅ Use helper to get assigned checker info from various field names
+           const approver = getCheckerInfo(record);
+           
+           // ✅ Handle different possible name field variations
+           const checkerName = 
+             approver?.name || 
+             approver?.checkerName || 
+             approver?.fullName || 
+             approver?.userName ||
+             "Not Assigned";
+           
+           return (
+             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+               <UserOutlined style={{ color: PRIMARY_BLUE, fontSize: 12 }} />
+               <div
+                 style={{
+                   color: PRIMARY_BLUE,
+                   fontWeight: 600,
+                   fontSize: 13,
+                 }}
+               >
+                 {checkerName}
+               </div>
+             </div>
+           );
+         },
+       },
     {
       title: "Docs",
       dataIndex: "documents",
@@ -560,63 +595,50 @@ const Completed = () => {
       background-color: #f7f7f7 !important;
       color: ${PRIMARY_BLUE} !important;
       font-weight: 700;
-      padding: 14px 12px !important;
-      border-bottom: 3px solid ${SUCCESS_GREEN} !important;
+      font-size: 15px;
+      padding: 16px 16px !important;
+      border-bottom: 3px solid #b5d334 !important;
+      border-right: none !important;
     }
-    .creator-completed-table .ant-table-tbody > tr:hover > td {
-      background-color: rgba(82, 196, 26, 0.1) !important;
+    .creator-completed-table .ant-table-tbody > tr > td {
+      border-bottom: 1px solid #f0f0f0 !important;
+      border-right: none !important;
+      padding: 14px 16px !important;
+      font-size: 14px;
+      color: #374151;
+    }
+    .creator-completed-table .ant-table-tbody > tr.ant-table-row:hover > td {
+      background-color: rgba(181, 211, 52, 0.1) !important;
       cursor: pointer;
+    }
+    .creator-completed-table .ant-pagination .ant-pagination-item-active {
+      background-color: #b5d334 !important;
+      border-color: #b5d334 !important;
+    }
+    .creator-completed-table .ant-pagination .ant-pagination-item-active a {
+      color: ${PRIMARY_BLUE} !important;
+      font-weight: 600;
     }
   `;
 
+  // Responsive padding
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 375;
+  const padding = isMobile ? "8px 2px" : "24px";
+  const cardMargin = isMobile ? 8 : 12;
+
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding, boxSizing: "border-box" }}>
       <style>{customTableStyles}</style>
-
-      {/* ---------------- HEADER ---------------- */}
-      <Card
-        style={{
-          marginBottom: 24,
-          borderRadius: 8,
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-          borderLeft: `4px solid ${SUCCESS_GREEN}`,
-        }}
-        bodyStyle={{ padding: 16 }}
-      >
-        <Row justify="space-between" align="middle">
-          <Col>
-            <h2
-              style={{
-                margin: 0,
-                color: PRIMARY_BLUE,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              Completed Checklists
-              <Badge
-                count={filteredData.length}
-                style={{ backgroundColor: SUCCESS_GREEN }}
-              />
-            </h2>
-            <p style={{ margin: "4px 0 0", color: "#666" }}>
-              Checklists approved by checkers
-            </p>
-          </Col>
-        </Row>
-      </Card>
-
       {/* ---------------- FILTER ---------------- */}
       <Card
         size="small"
         style={{
-          marginBottom: 16,
+          marginBottom: cardMargin,
           background: "#fafafa",
           borderRadius: 8,
         }}
       >
-        <Row gutter={16}>
+        <Row gutter={[12, 12]}>
           <Col xs={24} sm={12} md={8}>
             <Input
               prefix={<SearchOutlined />}

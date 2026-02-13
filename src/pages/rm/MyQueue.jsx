@@ -223,7 +223,7 @@ const MyQueue = ({ userId }) => {
     {
       title: "Customer Name",
       dataIndex: "customerName",
-      width: 80,
+      width: 130,
       render: (text) => (
         <div
           style={{
@@ -380,7 +380,7 @@ const MyQueue = ({ userId }) => {
       border-right: none !important; 
       padding: 12px 12px !important; 
       fontSize: 13px; 
-      color: #333; 
+      color: #374151; 
     }
     .rm-myqueue-table .ant-table-tbody > tr.ant-table-row:hover > td { 
       background-color: rgba(43, 28, 103, 0.1) !important; 

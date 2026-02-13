@@ -510,17 +510,34 @@ const Completed = () => {
       background-color: #f7f7f7 !important;
       color: ${PRIMARY_BLUE} !important;
       font-weight: 700;
-      padding: 14px 12px !important;
-      border-bottom: 3px solid ${SUCCESS_GREEN} !important;
+      font-size: 15px;
+      padding: 16px 16px !important;
+      border-bottom: 3px solid #b5d334 !important;
+      border-right: none !important;
     }
-    .creator-completed-table .ant-table-tbody > tr:hover > td {
-      background-color: rgba(82, 196, 26, 0.1) !important;
+    .creator-completed-table .ant-table-tbody > tr > td {
+      border-bottom: 1px solid #f0f0f0 !important;
+      border-right: none !important;
+      padding: 14px 16px !important;
+      font-size: 14px;
+      color: #374151;
+    }
+    .creator-completed-table .ant-table-tbody > tr.ant-table-row:hover > td {
+      background-color: rgba(181, 211, 52, 0.1) !important;
       cursor: pointer;
+    }
+    .creator-completed-table .ant-pagination .ant-pagination-item-active {
+      background-color: #b5d334 !important;
+      border-color: #b5d334 !important;
+    }
+    .creator-completed-table .ant-pagination .ant-pagination-item-active a {
+      color: ${PRIMARY_BLUE} !important;
+      font-weight: 600;
     }
   `;
 
   return (
-    <div style={{ padding: 24 }}>
+    <div style={{ padding: "8px 2px", boxSizing: "border-box" }}>
       <style>{customTableStyles}</style>
 
       <Card

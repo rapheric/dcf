@@ -17,6 +17,7 @@ const { TabPane } = Tabs;
 
 export default function Reports() {
   const [activeTab, setActiveTab] = useState("deferrals");
+  const [isMobile] = React.useState(window.innerWidth <= 375);
 
   // Filter hook
   const { filters, setFilters, clearFilters } = useReportsFilters();
@@ -39,7 +40,7 @@ export default function Reports() {
   const renderTable = () => {
     switch (activeTab) {
       case "deferrals":
-        return <Deferrals filters={filters} onExport={exportReport} />;
+        return <Deferrals hideFilters={true} filters={filters} onExport={exportReport} />;
       case "allDCLs":
         return <AllDCLsTable filters={filters} onExport={exportReport} />;
       default:
@@ -48,24 +49,8 @@ export default function Reports() {
   };
 
   return (
-    <div style={{ padding: 24 }}>
-      {/* HEADER */}
-      <Card style={{ marginBottom: 24 }}>
-        <Row justify="space-between">
-          <Col>
-            <h2>DCL Reports & Analytics</h2>
-          </Col>
-          <Col>
-            <Tooltip title="Export Report">
-              <Button
-                icon={<DownloadOutlined />}
-                onClick={() => exportReport([])} // replace with actual table data
-              />
-            </Tooltip>
-          </Col>
-        </Row>
-      </Card>
-
+    <div style={{ padding: isMobile ? "8px 2px" : 16, boxSizing: "border-box" }}>
+     
       {/* FILTERS */}
       <ReportsFilters
         activeTab={activeTab}
@@ -82,6 +67,7 @@ export default function Reports() {
           clearFilters(); // reset filters when switching tabs
         }}
         type="card"
+        style={{ marginBottom: 8 }}
       >
         <TabPane
           key="deferrals"
@@ -95,19 +81,19 @@ export default function Reports() {
           key="allDCLs"
           tab={
             <>
-              <FileTextOutlined /> All DCLs
+              <CheckCircleOutlined /> All DCLs
             </>
           }
         />
       </Tabs>
 
-      <Divider />
+      <Divider style={{ margin: "4px 0" }} />
 
       {/* TABLE */}
       {renderTable()}
 
       {/* FOOTER */}
-      <div style={{ marginTop: 24, fontSize: 12 }}>
+      <div style={{ marginTop: 12, fontSize: 12, color: "#666" }}>
         Generated on {dayjs().format("DD/MM/YYYY HH:mm:ss")}
       </div>
     </div>
